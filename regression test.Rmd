@@ -12,6 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 importing my data
 
 ```{r}
-
+claims <- read.csv('data/claims.csv')
 ```
 

@@ -38,11 +38,58 @@ glimpse(claims)
 i now want to summarize the number of cases of hail claims per state, their sums and their means
 
 ```{r}
-claims %>%
+claims <- claims %>%
   group_by(State) %>%
   filter(Claim.Reason=="Hail") %>%
-  summarise(count=n(), SumAllClaims=sum(Claim.Amount), MeanClaim=mean(Claim.Amount))
+  summarise(NumberClaims=n(), SumAllClaims=sum(Claim.Amount), MeanClaim=mean(Claim.Amount))
 ```
+
+now i will import and process the data for hail
+```{r}
+hail <- read.csv('data/hail.csv')
+tbl_df(hail)
+glimpse(hail)
+```
+i am not intersted in the data and x columns, as well as in all cases of hail that did not affect any population or data for states that are not included in the claims dataset
+
+
+```{r}
+hail <- select(hail, State, Hail.Size, Population.Affected)
+hail <- filter(hail, Population.Affected > 0, State ==c("Iowa","Kansas","Missouri","Nebraska","Oklahoma"))
+```
+
+i see that the hail size variable is not a number and will need to be normalized. lets see all the possible values
+
+```{r}
+unique(hail$Hail.Size)
+```
+i will need to extract the numbers from these values
+
+```{r}
+library(tidyr)
+hail <- hail %>%
+  mutate_each(funs(extract_numeric), Hail.Size)
+```
+
+now i want to compute the weigted average size of hail for each state and also the total population affected. i also hypothesize that bigger hail size might have a  disproportionate impact on insurance claims so i woukd also want to test against the maximum hail size too.
+
+```{r}
+hail <- hail %>%
+  group_by(State)%>%
+  summarise(TotalPopulationAffected = sum(Population.Affected), AverageHailSize = weighted.mean(Hail.Size, Population.Affected), MaxHailSize = max(Hail.Size))
+
+```
+
+now finally i want to join the claims and the hail datasets
+
+```{r}
+ClaimsHail <- left_join(claims, hail, by="State")
+
+```
+
+
+
+
 
 
 

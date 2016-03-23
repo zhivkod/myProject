@@ -15,3 +15,54 @@ importing my data
 claims <- read.csv('data/claims.csv')
 ```
 
+loading dplyr
+
+```{r}
+library(dplyr)
+```
+
+i want to convert my data to a tbl so i can start exploring it
+
+```{r}
+tbl_df(claims)
+glimpse(claims)
+```
+
+for the purposes of my study  i am only interested in a few of these columns, so i will clean up my dataset to remove all data i do not need:
+
+```{r}
+claims <- select(claims, State, Claim.Reason, Claim.Amount )
+glimpse(claims)
+```
+
+I am only intersted in the cases related to hail, so lets see what the code for that reason is
+
+```{r}
+unique(claims$Claim.Reason)
+```
+I see that the code is "Hail", so now i want to limit my dataset to only those cases related to Hail
+
+```{r}
+claims <- filter(claims, Claim.Reason == "Hail")
+glimpse(claims)
+```
+
+i can confirm that the new set has a reduced number of rows, all with hail as a claim reason. now as a last optimization, i can remove the Claims.Reason variable from the dataset since it is not relevant anymore
+
+```{r}
+claims <- select(claims, State, Claim.Amount)
+glimpse(claims)
+```
+
+now what i want is to get the cumulative number of claims and total amount of claims from hail per state
+
+```{r}
+claims %>% 
+  group_by(State) %>% 
+  mutate(claims, TotalClaimsAmount = sum(Claim.Amount) )
+```
+
+
+
+
+

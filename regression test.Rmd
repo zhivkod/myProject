@@ -35,31 +35,13 @@ claims <- select(claims, State, Claim.Reason, Claim.Amount )
 glimpse(claims)
 ```
 
-I am only intersted in the cases related to hail, so lets see what the code for that reason is
+i now want to summarize the number of cases of hail claims per state, their sums and their means
 
 ```{r}
-unique(claims$Claim.Reason)
-```
-I see that the code is "Hail", so now i want to limit my dataset to only those cases related to Hail
-
-```{r}
-claims <- filter(claims, Claim.Reason == "Hail")
-glimpse(claims)
-```
-
-i can confirm that the new set has a reduced number of rows, all with hail as a claim reason. now as a last optimization, i can remove the Claims.Reason variable from the dataset since it is not relevant anymore
-
-```{r}
-claims <- select(claims, State, Claim.Amount)
-glimpse(claims)
-```
-
-now what i want is to get the cumulative number of claims and total amount of claims from hail per state
-
-```{r}
-claims %>% 
-  group_by(State) %>% 
-  mutate(claims, TotalClaimsAmount = sum(Claim.Amount) )
+claims %>%
+  group_by(State) %>%
+  filter(Claim.Reason=="Hail") %>%
+  summarise(count=n(), SumAllClaims=sum(Claim.Amount), MeanClaim=mean(Claim.Amount))
 ```
 
 

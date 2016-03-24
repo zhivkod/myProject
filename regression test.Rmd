@@ -87,8 +87,14 @@ ClaimsHail <- left_join(claims, hail, by="State")
 
 ```
 
+now that i have my data all tidy, i want to explore for correlations between the variables. i will use the rcorr function
 
+```{r}
+library(Hmisc)
+rcorr(as.matrix(ClaimsHail[,2:7]))
+```
 
+from these i see that the only statistically significant relationship (p<0.5) is between the maxhailsize and the total population affected. it makes some sense that stronger hail is also likely more distributed and affects a wider area. the size of my data, however, does not seem to support any other relations so i will need to find larger datasets.§
 
 
 
